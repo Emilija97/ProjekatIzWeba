@@ -1,0 +1,35 @@
+{
+    "namirnice": [{
+            "id": "1",
+            "naziv": "Boranija",
+            "proteini": "2.1",
+            "UH": "2.4",
+            "kalorije": "18",
+            "masti": "0.1"
+        },
+        {
+            "id": "2",
+            "naziv": "Pecurke",
+            "proteini": "2.2",
+            "UH": "5.4",
+            "kalorije": "28",
+            "masti": "0.45"
+        },
+        {
+            "id": "3",
+            "naziv": "Krompir",
+            "proteini": "2.02",
+            "UH": "20.71",
+            "kalorije": "90",
+            "masti": "0.17"
+        },
+        {
+            "id": "4",
+            "naziv": "Sargarepa",
+            "proteini": "1",
+            "UH": "8",
+            "kalorije": "35",
+            "masti": "0"
+        }
+    ]
+}
