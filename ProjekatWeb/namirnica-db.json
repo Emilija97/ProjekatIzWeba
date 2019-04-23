@@ -1,35 +1,102 @@
 {
     "namirnice": [{
-            "id": "1",
+            "id": 1,
             "naziv": "Boranija",
-            "proteini": "2.1",
-            "UH": "2.4",
-            "kalorije": "18",
-            "masti": "0.1"
+            "proteini": 2.1,
+            "UH": 2.4,
+            "kalorije": 18,
+            "masti": 0.1,
+            "tip": "povrce"
         },
         {
-            "id": "2",
+            "id": 2,
             "naziv": "Pecurke",
-            "proteini": "2.2",
-            "UH": "5.4",
-            "kalorije": "28",
-            "masti": "0.45"
+            "proteini": 2.2,
+            "UH": 5.4,
+            "kalorije": 28,
+            "masti": 0.45,
+            "tip": "povrce"
         },
         {
-            "id": "3",
+            "id": 3,
             "naziv": "Krompir",
-            "proteini": "2.02",
-            "UH": "20.71",
-            "kalorije": "90",
-            "masti": "0.17"
+            "proteini": 2.02,
+            "UH": 20.71,
+            "kalorije": 90,
+            "masti": 0.17,
+            "tip": "povrce"
         },
         {
-            "id": "4",
+            "id": 4,
             "naziv": "Sargarepa",
-            "proteini": "1",
-            "UH": "8",
-            "kalorije": "35",
-            "masti": "0"
+            "proteini": 1,
+            "UH": 8,
+            "kalorije": 35,
+            "masti": 0,
+            "tip": "povrce"
+        },
+        {
+            "id": 5,
+            "naziv": "Karfiol",
+            "proteini": 1.77,
+            "UH": 4.03,
+            "kalorije": 23,
+            "masti": 0.48,
+            "tip": "povrce"
+        },
+        {
+            "id": 6,
+            "naziv": "Govedina",
+            "proteini": 18.8,
+            "UH": 0,
+            "kalorije": 214,
+            "masti": 15.4,
+            "tip": "meso"
+        },
+        {
+            "id": 7,
+            "naziv": "Jagnjetina",
+            "proteini": 19,
+            "UH": 0,
+            "kalorije": 211,
+            "masti": 15,
+            "tip": "meso"
+        },
+        {
+            "id": 8,
+            "naziv": "Piletina",
+            "proteini": 17.6,
+            "UH": 0,
+            "kalorije": 230,
+            "masti": 17.7,
+            "tip": "meso"
+        },
+        {
+            "id": 9,
+            "naziv": "Slanina",
+            "proteini": 14,
+            "UH": 0,
+            "kalorije": 506,
+            "masti": 50,
+            "tip": "meso"
+        },
+        {
+            "id": 10,
+            "naziv": "Breskva",
+            "proteini": 0.91,
+            "UH": 9.54,
+            "kalorije": 39,
+            "masti": 0.25,
+            "tip": "voce"
+        },
+        {
+            "id": 11,
+            "naziv": "Kesten",
+            "proteini": 2,
+            "UH": 36,
+            "kalorije": 170,
+            "masti": 0,
+            "tip": "voce"
         }
     ]
 }
