@@ -8,5 +8,5 @@ function getNamirnica(name) {
     );
 }
 
-getNamirnica("Govedina").subscribe(namirnica => console.log(namirnica));
-getNamirnica("Breskva").subscribe(namirnica => console.log(namirnica));
+getNamirnica("Jagnjetina").subscribe(namirnica => console.log(namirnica));
+getNamirnica("Pecurke").subscribe(namirnica => console.log(namirnica));
