@@ -97,6 +97,25 @@
             "kalorije": 170,
             "masti": 0,
             "tip": "voce"
+        },
+        {
+            "id": 12,
+            "naziv": "Hleb-crni",
+            "proteini": 8,
+            "UH": 43,
+            "kalorije": 222,
+            "masti": 2,
+            "tip": "voce"
+        },
+        {
+            "id": 13,
+            "naziv": "Hleb-beli",
+            "proteini": 8,
+            "UH": 46,
+            "kalorije": 234,
+            "masti": 2,
+            "tip": "voce"
         }
+
     ]
 }

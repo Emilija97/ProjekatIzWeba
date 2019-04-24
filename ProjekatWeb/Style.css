@@ -1,0 +1,60 @@
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 1%;
+}
+
+.namirnica {
+    max-width: 350px;
+    flex: 1;
+}
+
+.obrisi {
+    max-width: 200px;
+    flex: 1;
+}
+
+table,
+th,
+td {
+    border: solid black 1px;
+    border-collapse: collapse;
+    width: 600px;
+    margin: 5px 0 5px 0;
+    flex: 1;
+}
+
+.zaglavlje {
+    background-color: bisque;
+}
+
+.divPretraga {
+    display: flex;
+}
+
+.kalkulator {
+    display: flex;
+    flex-direction: column;
+    max-width: 250px;
+    padding: 1%;
+    margin-top: 3px;
+}
+
+.number {
+    margin-top: 3px;
+    display: flex;
+    flex: 1;
+}
+
+.kategorija {
+    margin-top: 3px;
+    display: flex;
+    flex: 1;
+}
+
+.rezultat {
+    margin-top: 3px;
+    display: flex;
+    flex: 1;
+    background-color: beige;
+}
