@@ -1,6 +1,10 @@
-import { from, fromEvent, Subject } from "rxjs";
-import { debounceTime, switchMap, map, filter, find } from "rxjs/operators";
+import { from, fromEvent, Subject, interval } from "rxjs";
+import { debounceTime, switchMap, map, filter, find, scan, reduce, zip, pairwise } from "rxjs/operators";
 
+let flagUnos = 0;
+let flagKat = 0;
+let flagNam = 0;
+let flagGram = 0;
 let red = null;
 let flag = 0;
 
@@ -30,6 +34,13 @@ fromEvent(input, "input").pipe(
     filter(text => text.length >= 3),
     switchMap(naziv => getNamirnica(naziv))
 ).subscribe(rezultat => fillTable(rezultat, divPretraga));
+
+function hvatajPromenu(klasa) {
+    fromEvent(document.querySelector(klasa), "input").pipe(
+        debounceTime(500),
+        map(ev => ev.target.value)
+    ).subscribe(() => izracunajVrednost());
+}
 
 function kreirajTabelu(div) {
     const tabela = document.createElement("table");
@@ -94,6 +105,8 @@ function fillTable(lista, div) {
     });
 }
 
+iscrtajKalkulator();
+
 function iscrtajKalkulator() {
     const divKalkulator = document.createElement("div");
     divKalkulator.className = "kalkulator";
@@ -103,52 +116,74 @@ function iscrtajKalkulator() {
     objekat.innerHTML = "Kalkulator";
     divKalkulator.appendChild(objekat);
 
-    objekat = document.createElement("input");
-    objekat.className = "unos";
-    objekat.value = "Namirnica";
-    objekat.onfocus = () => myFocus(".unos");
-    divKalkulator.appendChild(objekat);
+    kreirajInput("unos", "Namirnica", divKalkulator);
+    objekat = document.querySelector(".unos");
+    objekat.onchange = () => hvatajPromenu(".unos");
+    objekat.onfocus = () => {
+        flagUnos = myFocus(".unos", flagUnos);
+    }
 
-    objekat = document.createElement("input");
+    kreirajNumber("number", divKalkulator);
+    objekat = document.querySelector(".number");
+    objekat.onchange = () => hvatajPromenu(".number");
+
+    kreirajInput("kategorija", "proteini, UH, kalorije, masti", divKalkulator);
+    objekat = document.querySelector(".kategorija");
+    objekat.onchange = () => hvatajPromenu(".kategorija");
+    objekat.onfocus = () => {
+        flagKat = myFocus(".kategorija", flagKat);
+    }
+
+    kreirajLabelu("rezultat", divKalkulator);
+
+    kreirajDugme("izracunaj", "Izracunaj", divKalkulator);
+    objekat = document.querySelector(".izracunaj");
+    objekat.onclick = () => izracunajVrednost();
+}
+
+function kreirajNumber(tekst, div) {
+    let objekat = document.createElement("input");
     objekat.type = "number";
-    objekat.className = "number";
-    objekat.defaultValue = 0;
+    objekat.className = tekst;
+    objekat.defaultValue = 100;
+    objekat.setAttribute("step", 100);
     objekat.setAttribute("min", 0);
     objekat.setAttribute("max", 2000);
-    divKalkulator.appendChild(objekat);
-
-    objekat = document.createElement("input");
-    objekat.className = "kategorija";
-    objekat.value = "proteini, UH, kalorije, masti";
-    objekat.onfocus = () => myFocus(".kategorija");
-    divKalkulator.appendChild(objekat);
-
-    objekat = document.createElement("label");
-    objekat.className = "rezultat";
-    //objekat.innerHTML = "Ja sam tu!";
-    divKalkulator.appendChild(objekat);
-
-    objekat = document.createElement("button");
-    objekat.className = "izracunaj";
-    objekat.innerHTML = "Izracunaj";
-    objekat.onclick = () => izracunajVrednost();
-    divKalkulator.appendChild(objekat);
+    div.appendChild(objekat);
+    // objekat.onchange = () => hvatajPromenu(".number");
 }
 
-function myFocus(klasa) {
-    document.querySelector(klasa).value = "";
+function kreirajDugme(tekst, sadrzaj, div) {
+    let objekat = document.createElement("button");
+    objekat.className = tekst;
+    objekat.innerHTML = sadrzaj;
+    div.appendChild(objekat);
 }
 
-iscrtajKalkulator();
+function kreirajLabelu(tekst, div) {
+    let objekat = document.createElement("label");
+    objekat.className = tekst;
+    div.appendChild(objekat);
+}
 
-const subject$ = new Subject();
+function kreirajInput(tekst, vrednost, div) {
+    let objekat = document.createElement("input");
+    objekat.className = tekst;
+    objekat.value = vrednost;
+    div.appendChild(objekat);
+}
+
+function myFocus(klasa, flag) {
+    if (flag == 0) {
+        document.querySelector(klasa).value = "";
+        return flag = 1;
+    }
+}
 
 function izracunajVrednost() {
     const namirnica = document.querySelector(".unos").value;
     const gramaza = document.querySelector(".number").value;
     const kategorija = document.querySelector(".kategorija").value;
-
-    console.log(kategorija);
 
     getNamirnica(namirnica).subscribe(obj => ispisiPodatke(obj, gramaza, kategorija));
 }
@@ -157,6 +192,11 @@ function ispisiPodatke(lista, gramaza, kategorija) {
     let value = 0;
     const labela = document.querySelector(".rezultat");
 
+    value = izracunaj(lista, gramaza, kategorija, labela);
+}
+
+function izracunaj(lista, gramaza, kategorija, labela) {
+    let value = 0;
     lista.forEach(el => {
         if (kategorija == "UH") {
             value = el.UH * (gramaza / 100);
@@ -172,5 +212,140 @@ function ispisiPodatke(lista, gramaza, kategorija) {
             labela.innerHTML = "Kolicina kalorija na " + gramaza + "g iznosi " + value + ".";
         }
     });
+    return value;
+}
 
+crtajDnevniKalkulator();
+
+function crtajDnevniKalkulator() {
+    const noviKalkulator = document.createElement("div");
+    noviKalkulator.className = "dnevniKalkulator";
+    document.body.appendChild(noviKalkulator);
+
+    let objekat = document.createElement("h3");
+    objekat.innerHTML = "Dnevni kalkulator";
+    noviKalkulator.appendChild(objekat);
+
+    let kategorije = ["proteini", "UH", "masti", "kalorije"];
+    let labela = null;
+
+    kategorije.forEach((el, index) => {
+        const divKategorije = document.createElement("div");
+        divKategorije.className = "divKategorije";
+        noviKalkulator.appendChild(divKategorije);
+
+        const radioDugme = document.createElement("input");
+        radioDugme.setAttribute("type", "radio");
+        radioDugme.setAttribute("value", kategorije[index]);
+        radioDugme.setAttribute("name", "dugme");
+        radioDugme.className = "radio";
+        divKategorije.appendChild(radioDugme);
+
+        labela = document.createElement("label");
+        labela.innerHTML = kategorije[index].charAt(0).toUpperCase() + kategorije[index].slice(1);
+        labela.className = "labela";
+        divKategorije.appendChild(labela);
+    });
+
+    const divUnos = document.createElement("div");
+    divUnos.className = "divUnos";
+    noviKalkulator.appendChild(divUnos);
+
+    kreirajInput("dnevniUnos", "Namirnica", divUnos);
+    objekat = document.querySelector(".dnevniUnos");
+    objekat.onfocus = () => {
+        flagNam = myFocus(".dnevniUnos", flagNam);
+    }
+
+    kreirajNumber("limit", divUnos);
+    objekat = document.querySelector(".limit");
+    objekat.onchange = () => hvatajPromenu(".limit");
+
+    kreirajInput("gramazaUnos", "Kolicina u gramima", divUnos);
+    objekat = document.querySelector(".gramazaUnos");
+    objekat.onfocus = () => {
+        flagGram = myFocus(".gramazaUnos", flagGram);
+    }
+
+    kreirajLabelu("dnevnaLabela", divUnos);
+
+    kreirajDugme("izracunajDnevniUnos", "Izracunaj dnevni unos", divUnos);
+    objekat = document.querySelector(".izracunajDnevniUnos");
+    objekat.onclick = () => ispisiRacunicu();
+
+    kreirajLabelu("prikaz", divUnos);
+
+    objekat = document.createElement("h4");
+    objekat.innerHTML = "Unete namirnice i njihova kolicina";
+    divUnos.appendChild(objekat);
+
+    objekat = document.createElement("ol");
+    objekat.className = "listaPojedenihNamirnica";
+    divUnos.appendChild(objekat);
+}
+
+const listaNamirnica$ = new Subject();
+
+function ispisiRacunicu() {
+    const nam = document.querySelector(".dnevniUnos").value;
+    const izabranaKategorija = document.querySelectorAll(".radio");
+
+    getNamirnica(nam).subscribe(obj => popuniListu(obj, izabranaKategorija));
+}
+
+function popuniListu(obj, izabranaKategorija) {
+    let flagDugme = 0;
+    izabranaKategorija.forEach(dugme => {
+        if (dugme.checked) {
+            flagDugme = 1;
+        }
+    });
+
+    const lista = document.querySelector(".listaPojedenihNamirnica");
+    let objekat = null;
+    if (flagDugme == 1) {
+        listaNamirnica$.next(obj);
+        objekat = document.createElement("li");
+        objekat.innerHTML = document.querySelector(".dnevniUnos").value + " " + document.querySelector(".gramazaUnos").value + "g";
+        lista.appendChild(objekat);
+    } else
+        alert("Morate da oznacite po kom kriterijumu se vrsi obrada podataka!");
+}
+
+//Jedna labela prikazuje ukupnu sumu, a to je prikaz iz promise-a, a druga za svaku unetu namirnicu posebno
+const prikaz = document.querySelector(".dnevnaLabela");
+const label = document.querySelector(".prikaz");
+
+listaNamirnica$.pipe(
+    scan((acc, el) => acc + sracunajKomplikovano(el), 0)
+).subscribe(rezultat => subscribeFunc(rezultat, prikaz));
+
+function sracunajKomplikovano(el) {
+    let pom = 0;
+
+    const grami = document.querySelector(".gramazaUnos").value;
+    const izabranaKategorija = document.querySelectorAll(".radio");
+    izabranaKategorija.forEach(dugme => {
+        if (dugme.checked) {
+            pom = izracunaj(el, grami, dugme.value, prikaz);
+        }
+    });
+
+    label.innerHTML = "Nutritivna vrednost date namirnice za zadatu kolicinu iznosi: " + pom;
+    return pom;
+}
+
+function subscribeFunc(rezultat, prikaz) {
+    promiseFunc(rezultat, prikaz).catch(() => {
+        alert("Cestitamo, vas dnevni unos je prekoracen!");
+    });
+}
+
+function promiseFunc(rezultat, prikaz) {
+    return new Promise((resolve, reject) => {
+        const limit = document.querySelector(".limit").value;
+        setTimeout(() => limit > rezultat ?
+            resolve(prikaz.innerHTML = "Dosadasnji unos iznosi " + rezultat) :
+            reject("Unos je predjen"), 100);
+    });
 }

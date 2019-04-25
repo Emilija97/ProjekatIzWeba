@@ -58,3 +58,17 @@ td {
     flex: 1;
     background-color: beige;
 }
+
+.noviKalkulator {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: 1px;
+}
+
+.divUnos {
+    display: flex;
+    flex: 1;
+    margin: 1%;
+    flex-direction: column;
+}
