@@ -1,12 +1,33 @@
+html {
+    height: 100%;
+}
+
 body {
     display: flex;
     flex-direction: column;
     margin: 1%;
+    height: 100%;
+    background-image: linear-gradient(#FFEFAB, #FFEFAB, #FFEFBA, #FFFFFF);
+    border-image: linear-gradient(to right, #FFEFBA, #D31027);
+    margin: auto;
+    margin-top: 2%;
+    width: 40%;
+}
+
+h2 {
+    text-align: center;
 }
 
 .namirnica {
     max-width: 350px;
     flex: 1;
+    font-family: sans-serif;
+    padding-left: 5px;
+    color: grey;
+    border: 2px solid grey;
+    border-radius: 7px;
+    background-image: linear-gradient(to right, #FFEFBA, #FFEFBA, #ffffff);
+    font-weight: bold;
 }
 
 .obrisi {
@@ -25,31 +46,11 @@ td {
 }
 
 .zaglavlje {
-    background-color: bisque;
+    background-color: antiquewhite;
 }
 
-.divPretraga {
-    display: flex;
-}
-
-.kalkulator {
-    display: flex;
-    flex-direction: column;
-    max-width: 250px;
-    padding: 1%;
-    margin-top: 3px;
-}
-
-.number {
-    margin-top: 3px;
-    display: flex;
-    flex: 1;
-}
-
-.kategorija {
-    margin-top: 3px;
-    display: flex;
-    flex: 1;
+td {
+    background-color: #FFFFFF
 }
 
 .rezultat {
@@ -59,16 +60,72 @@ td {
     background-color: beige;
 }
 
+.divPretraga {
+    display: flex;
+}
+
+.kalkulator {
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
+    margin-top: 3px;
+}
+
 .noviKalkulator {
     display: flex;
-    flex: 1;
     flex-direction: column;
-    margin: 1px;
+    padding: 1%;
+    margin-top: 3px;
 }
 
 .divUnos {
     display: flex;
-    flex: 1;
-    margin: 1%;
     flex-direction: column;
+    padding: 1%;
+    margin-top: 3px;
+}
+
+.dnevniUnos,
+.limit,
+.gramazaUnos,
+.unos,
+.number,
+.kategorija {
+    width: 98%;
+    height: 100%;
+    font-size: 15px;
+    margin-top: 3px;
+    font-family: sans-serif;
+    padding-left: 5px;
+    color: grey;
+    border: 2px solid grey;
+    border-radius: 7px;
+    background-image: linear-gradient(to right, #FFEFBA, #FFEFBA, #ffffff);
+    font-weight: bold;
+}
+
+.dnevnaLabela {
+    margin-top: 3px;
+    display: flex;
+    flex: 1;
+}
+
+.prikaz {
+    margin-top: 3px;
+    display: flex;
+    flex: 1;
+}
+
+button {
+    width: 100%;
+    height: 100%;
+    font-size: 15px;
+    margin-top: 3px;
+    font-family: 'Times New Roman';
+    padding-left: 5px;
+    color: grey;
+    border: 2px solid grey;
+    border-radius: 7px;
+    background-image: linear-gradient(to right, #FFEFBA, #FFEFBA, #ffffff);
+    font-weight: bold;
 }

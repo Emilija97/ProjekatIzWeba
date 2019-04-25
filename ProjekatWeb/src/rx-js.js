@@ -8,6 +8,10 @@ let flagGram = 0;
 let red = null;
 let flag = 0;
 
+const naslov = document.createElement("h2");
+naslov.innerHTML = "Izracunavanje nutritivnih vrednosti";
+document.body.appendChild(naslov);
+
 const divPretraga = document.createElement("div");
 divPretraga.className = "pretraga";
 document.body.appendChild(divPretraga);
@@ -284,7 +288,7 @@ function crtajDnevniKalkulator() {
     divUnos.appendChild(objekat);
 }
 
-const listaNamirnica$ = new Subject();
+let listaNamirnica$ = new Subject();
 
 function ispisiRacunicu() {
     const nam = document.querySelector(".dnevniUnos").value;
