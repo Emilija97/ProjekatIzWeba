@@ -7,8 +7,8 @@ body {
     flex-direction: column;
     margin: 1%;
     height: 100%;
-    background-image: linear-gradient(#FFEFAB, #FFEFAB, #FFEFBA, #FFFFFF);
-    border-image: linear-gradient(to right, #FFEFBA, #D31027);
+    background: linear-gradient(#FFEFAB, #FFEFAB, #FFEFBA, #FFFFFF) fixed;
+    /* border-image: linear-gradient(to right, #FFEFBA, #D31027); */
     margin: auto;
     margin-top: 2%;
     width: 40%;

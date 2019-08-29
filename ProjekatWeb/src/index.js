@@ -18,9 +18,10 @@ ns.dodajNamirnicu(new Namirnica("Kesten", 2, 36, 170, 0));
 //console.log(ns.vratiPoslednjeDodatuNamirnicu());
 console.log(ns.vratiSveNamirnice());
 
-function getRandomNumber() {
-    return parseInt(Math.random() * 10);
-}
+var getRandomNumber = () => parseInt(Math.random() * 10);
+// function getRandomNumber() {
+//     return parseInt(Math.random() * 10);
+// }
 
 function uporedi(namirnica1, namirnica2) {
     return namirnica1.proteini > namirnica2.proteini ? namirnica1 : namirnica2;

@@ -1,5 +1,5 @@
-import { from, fromEvent, Subject, interval } from "rxjs";
-import { debounceTime, switchMap, map, filter, find, scan, reduce, zip, pairwise } from "rxjs/operators";
+import { from, fromEvent, Subject, interval, Observable, zip } from "rxjs";
+import { debounceTime, switchMap, map, filter, find, scan, reduce, pairwise } from "rxjs/operators";
 
 let flagUnos = 0;
 let flagKat = 0;
@@ -286,9 +286,12 @@ function crtajDnevniKalkulator() {
     objekat = document.createElement("ol");
     objekat.className = "listaPojedenihNamirnica";
     divUnos.appendChild(objekat);
+
+    kreirajLabelu("zipLab", divUnos);
 }
 
 let listaNamirnica$ = new Subject();
+
 
 function ispisiRacunicu() {
     const nam = document.querySelector(".dnevniUnos").value;
@@ -315,6 +318,7 @@ function popuniListu(obj, izabranaKategorija) {
     } else
         alert("Morate da oznacite po kom kriterijumu se vrsi obrada podataka!");
 }
+
 
 //Jedna labela prikazuje ukupnu sumu, a to je prikaz iz promise-a, a druga za svaku unetu namirnicu posebno
 const prikaz = document.querySelector(".dnevnaLabela");
@@ -352,4 +356,14 @@ function promiseFunc(rezultat, prikaz) {
             resolve(prikaz.innerHTML = "Dosadasnji unos iznosi " + rezultat) :
             reject("Unos je predjen"), 100);
     });
+}
+const $obsZip = interval(10000);
+
+//ovde se izvrsava zip fja
+zip(listaNamirnica$, $obsZip).subscribe(namirnica => prikazZip(namirnica))
+
+function prikazZip(namirnica) {
+    let lab = document.querySelector(".zipLab");
+    lab.innerHTML = namirnica[0][0].naziv;
+    console.log(namirnica[0][0].naziv);
 }
