@@ -10,6 +10,7 @@ import {
     pairwise,
     concatMap
 } from "rxjs/operators";
+import { Namirnica } from "./namirnica";
 
 let flagEnter = 0;
 let flagCat = 0;
@@ -17,6 +18,7 @@ let flagGro = 0;
 let flagGram = 0;
 let flag = 0;
 const selectOptions = ["Proteins", "UH", "Calories", "Fats"];
+const typeOfFood = ["Fruit", "Vegetable", "Milk", "Fish", "Meat", "Cereals"];
 
 function createLabel(className, innerHTML, parent) {
     let element = document.createElement("label");
@@ -81,17 +83,33 @@ function createTableHead(columnNames, parent) {
     });
 }
 
-createHElement("h2", "Calculating nutritional values", document.body);
+createDiv("leftDiv", document.body);
+const leftDiv = document.querySelector(".leftDiv");
 
-createDiv("search", document.body);
+createHElement("h2", "Calculating nutritional values", leftDiv);
+
+createDiv("search", leftDiv);
 const divSearch = document.querySelector(".search");
 
 function getGrocerie(name) {
-    let naziv = name.charAt(0).toUpperCase() + name.slice(1);
+    let naziv = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     return from(
         fetch(`http://localhost:3000/namirnice?naziv=${naziv}`).then(response =>
             response.json()
         )
+    );
+}
+
+function postGrocerie(grocerie) {
+    return from(
+        fetch(`http://localhost:3000/namirnice`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json, text/plain, */*",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(grocerie)
+        }).then(response => response.json())
     );
 }
 
@@ -172,7 +190,7 @@ function updateTable(array, parent) {
 drawCalculator();
 
 function drawCalculator() {
-    createDiv("calculator", document.body);
+    createDiv("calculator", leftDiv);
     const divCalculator = document.querySelector(".calculator");
 
     createHElement("h3", "Calculator", divCalculator);
@@ -307,7 +325,7 @@ function drawCategory(parent) {
 }
 
 function drawDailyCalculator() {
-    createDiv("dailyCalculator", document.body);
+    createDiv("dailyCalculator", leftDiv);
     let dailyCalculator = document.querySelector(".dailyCalculator");
 
     createHElement("h3", "Daily calculator", dailyCalculator);
@@ -319,7 +337,7 @@ function drawDailyCalculator() {
     drawInput(dailyCalculator);
 
     dailyActions();
-    // createLabel("zipLab", divUnos);
+    createLabel("zipLab", "", dailyCalculator);
 }
 
 function drawInput(parent) {
@@ -408,8 +426,10 @@ function fillTheList(grocerie, category) {
     const list = document.querySelector(".listEatenGroceries");
     if (flagButton == 1) {
         grocerieList$.next(grocerie);
+        let name = document.querySelector(".dailyInput").value;
         let itemHTML =
-            document.querySelector(".dailyInput").value +
+            name.charAt(0).toUpperCase() +
+            name.slice(1).toLowerCase() +
             " " +
             document.querySelector(".gramsInput").value +
             "g";
@@ -465,13 +485,86 @@ function promiseFunc(result, dailyDisplay) {
         );
     });
 }
-// const $obsZip = interval(10000);
 
-// //ovde se izvrsava zip fja
-// zip(listagrocerie$, $obsZip).subscribe(namirnica => prikazZip(namirnica));
+const timer$ = interval(10000);
 
-// function prikazZip(namirnica) {
-//     let lab = document.querySelector(".zipLab");
-//     lab.innerHTML = namirnica[0][0].naziv;
-//     console.log(namirnica[0][0].naziv);
-// }
+//ovde se izvrsava zip fja
+zip(grocerieList$, timer$).subscribe(grocerie => showElement(grocerie));
+
+function showElement(grocerie) {
+    let lab = document.querySelector(".zipLab");
+    lab.innerHTML = grocerie[0].naziv;
+    console.log(grocerie[0].naziv);
+}
+
+//Mogucnost dodavanja u bazu
+createDiv("rightDiv", document.body);
+const rightDiv = document.querySelector(".rightDiv");
+
+createHElement("h2", "Add new grocerie in database", rightDiv);
+
+drawForm();
+
+function drawForm() {
+    createDiv("form", rightDiv);
+    const form = document.querySelector(".form");
+
+    createLabel("propertyLabel", "Name of grocerie", form);
+    createInput("property", "", form);
+    createLabel("propertyLabel", "Proteins", form);
+    createInput("property", "", form);
+    createLabel("propertyLabel", "UHs", form);
+    createInput("property", "", form);
+    createLabel("propertyLabel", "Calories", form);
+    createInput("property", "", form);
+    createLabel("propertyLabel", "Fats", form);
+    createInput("property", "", form);
+
+    createLabel("propertyLabel", "Type", form);
+    createSelect("type", typeOfFood, form);
+
+    createButton("confirm", "Add in database", form);
+
+    const button = document.querySelector(".confirm");
+    button.onclick = () => createGrocerieObject();
+}
+
+function createGrocerieObject() {
+    let elements = document.querySelectorAll(".property");
+    let type = typeOfFood[document.querySelector(".type").selectedIndex];
+
+    const grocerie = new Namirnica(
+        elements[0].value,
+        elements[1].value,
+        elements[2].value,
+        elements[3].value,
+        elements[4].value,
+        transformType(type)
+    );
+    postGrocerie(grocerie);
+}
+
+function transformType(type) {
+    let tmp = null;
+    switch (type) {
+        case "Fruit":
+            tmp = "voce";
+            break;
+        case "Vegetable":
+            tmp = "povrce";
+            break;
+        case "Milk":
+            tmp = "mleko";
+            break;
+        case "Fish":
+            tmp = "riba";
+            break;
+        case "Meat":
+            tmp = "meso";
+            break;
+        default:
+            tmp = "zitarice";
+    }
+
+    return tmp;
+}
