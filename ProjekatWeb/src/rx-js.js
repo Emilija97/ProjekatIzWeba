@@ -232,7 +232,7 @@ function myFocus(klasa, flag) {
 }
 
 function calculateValue() {
-    const grocerie = document.querySelector(".unos").value;
+    const grocerie = document.querySelector(".enter").value;
     const grams = document.querySelector(".number").value;
     let category = selectOptions[document.querySelector("select").selectedIndex];
 
@@ -242,7 +242,7 @@ function calculateValue() {
 }
 
 function printData(grocerie, grams, category) {
-    const label = document.querySelector(".rezultat");
+    const label = document.querySelector(".result");
 
     calculate(grocerie, grams, category, label);
 }
