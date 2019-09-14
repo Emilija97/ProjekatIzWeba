@@ -92,9 +92,9 @@ createDiv("search", leftDiv);
 const divSearch = document.querySelector(".search");
 
 function getGrocerie(name) {
-    let naziv = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    let nameTmp = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     return from(
-        fetch(`http://localhost:3000/namirnice?naziv=${naziv}`).then(response =>
+        fetch(`http://localhost:3000/namirnice?name=${nameTmp}`).then(response =>
             response.json()
         )
     );
@@ -165,11 +165,11 @@ function createRow(rowData, parent) {
     const row = document.createElement("tr");
     parent.appendChild(row);
 
-    fillRow(rowData.naziv, row);
-    fillRow(rowData.proteini, row);
+    fillRow(rowData.name, row);
+    fillRow(rowData.proteins, row);
     fillRow(rowData.UH, row);
-    fillRow(rowData.kalorije, row);
-    fillRow(rowData.masti, row);
+    fillRow(rowData.calories, row);
+    fillRow(rowData.fats, row);
 }
 
 function fillRow(innerHTML, parent) {
@@ -277,21 +277,21 @@ function calculate(grocerie, grams, category, label) {
             break;
         case "Proteins":
             {
-                value = grocerie.proteini * (grams / 100);
+                value = grocerie.proteins * (grams / 100);
                 label.innerHTML =
                 "The amount of proteins per " + grams + "g is " + value + ".";
             }
             break;
         case "Fats":
             {
-                value = grocerie.masti * (grams / 100);
+                value = grocerie.fats * (grams / 100);
                 label.innerHTML =
                 "The amount of fats per " + grams + "g is " + value + ".";
             }
             break;
         default:
             {
-                value = grocerie.kalorije * (grams / 100);
+                value = grocerie.calories * (grams / 100);
                 label.innerHTML =
                 "The amount of calories per " + grams + "g is " + value + ".";
             }
@@ -469,7 +469,7 @@ function getValue(grocerie) {
 
 function subscribeFunc(result, dailyDisplay) {
     promiseFunc(result, dailyDisplay).catch(() => {
-        alert("You get your daily desired input!");
+        alert("You got your daily desired input!");
     });
 }
 
@@ -493,8 +493,8 @@ zip(grocerieList$, timer$).subscribe(grocerie => showElement(grocerie));
 
 function showElement(grocerie) {
     let lab = document.querySelector(".zipLab");
-    lab.innerHTML = grocerie[0].naziv;
-    console.log(grocerie[0].naziv);
+    lab.innerHTML = grocerie[0].name;
+    console.log(grocerie[0].name);
 }
 
 //Mogucnost dodavanja u bazu
@@ -539,7 +539,7 @@ function createGrocerieObject() {
         elements[2].value,
         elements[3].value,
         elements[4].value,
-        transformType(type)
+        type
     );
     postGrocerie(grocerie);
 }

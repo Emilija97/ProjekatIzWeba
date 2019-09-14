@@ -1,10 +1,10 @@
 export class Namirnica {
-    constructor(naziv, proteini, UH, kalorije, masti, tip) {
-        this.naziv = naziv;
-        this.proteini = proteini;
+    constructor(name, proteins, UH, calories, fats, type) {
+        this.name = name;
+        this.proteins = proteins;
         this.UH = UH;
-        this.kalorije = kalorije;
-        this.masti = masti;
-        this.tip = tip;
+        this.calories = calories;
+        this.fats = fats;
+        this.type = type;
     }
 }

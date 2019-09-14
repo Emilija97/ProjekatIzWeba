@@ -24,13 +24,12 @@ var getRandomNumber = () => parseInt(Math.random() * 10);
 // }
 
 function uporedi(namirnica1, namirnica2) {
-    return namirnica1.proteini > namirnica2.proteini ? namirnica1 : namirnica2;
+    return namirnica1.proteins > namirnica2.proteins ? namirnica1 : namirnica2;
 }
 
 function getByIndexAsync(index) {
     return new Promise((resolve, reject) => {
-        setTimeout(() => resolve(ns.getByIndex(index)),
-            getRandomNumber() * 1000);
+        setTimeout(() => resolve(ns.getByIndex(index)), getRandomNumber() * 1000);
     });
 }
 
@@ -41,7 +40,10 @@ getByIndexAsync(getRandomNumber())
         console.log(`Prva namirnica je `, namirnica1);
         getByIndexAsync(getRandomNumber()).then(namirnica2 => {
             console.log(`Druga namirnica je `, namirnica2);
-            console.log(`Namirnica sa vise proteina je: `, uporedi(namirnica1, namirnica2));
+            console.log(
+                `Namirnica sa vise proteina je: `,
+                uporedi(namirnica1, namirnica2)
+            );
         });
     });
 
@@ -52,7 +54,10 @@ Promise.all([
     ])
     .then(console.log(`Obradjujem...`))
     .then(namirnice => {
-        console.log('1. ', namirnice[0]);
-        console.log('2. ', namirnice[1]);
-        console.log('Namirnica sa vise proteina je: ', uporedi(namirnice[0], namirnice[1]));
+        console.log("1. ", namirnice[0]);
+        console.log("2. ", namirnice[1]);
+        console.log(
+            "Namirnica sa vise proteina je: ",
+            uporedi(namirnice[0], namirnice[1])
+        );
     });
