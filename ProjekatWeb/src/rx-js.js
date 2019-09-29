@@ -616,13 +616,12 @@ function drawTemporaryField(parent, max) {
     const temp = document.querySelector(".temporaryField");
     temp.innerHTML = "";
 
-    createOneRowOfField(temp, "Take groceries for chosen type:", 1, max, 0);
+    createOneRowOfField(temp, "Take groceries for chosen type:", 1, max, 0, 1);
+    createLabel("temporaryLabel", "Choose category for next calculation", temp);
     createSelect("categorySpec", categoryOptions, temp);
 
-    createDiv("fromTo", temp);
-    let fromTo = document.querySelector(".fromTo");
-    createOneRowOfField(fromTo, "From: ", 0.5, 500, 0);
-    createOneRowOfField(fromTo, "To: ", 0.5, 500, 0);
+    createOneRowOfField(temp, "From: ", 0.5, 500, 0, 1);
+    createOneRowOfField(temp, "To: ", 0.5, 500, 0, 0);
 
     createButton("tempBtn", "Calculate value in given range", temp); //btn btn-outline-success
     checkClick(".tempBtn", onTempBtnClick);
@@ -630,10 +629,22 @@ function drawTemporaryField(parent, max) {
     createDiv("listOfGroceries", temp);
 }
 
-function createOneRowOfField(parent, labelHtml, step, maxValue, defaultValue) {
-    createDiv("tempRow", parent);
-    let temp = document.querySelectorAll(".tempRow");
-    let div = temp[temp.length - 1];
+function createOneRowOfField(
+    parent,
+    labelHtml,
+    step,
+    maxValue,
+    defaultValue,
+    flagFromTo
+) {
+    if (flagFromTo == 1) {
+        createDiv("fromTo", parent);
+    }
+    let temp = document.querySelectorAll(".fromTo");
+    let fromTo = temp[temp.length - 1];
+    createDiv("tempRow", fromTo);
+    let temp2 = document.querySelectorAll(".tempRow");
+    let div = temp2[temp2.length - 1];
     createLabel("temporaryLabel", labelHtml, div);
     createNumber("specNumber", div, step, maxValue, defaultValue);
 }
@@ -643,7 +654,8 @@ function onTempBtnClick() {
     let type = typeOfFood[document.querySelector(".typeSpec").selectedIndex];
     let takeNmb = document.querySelector(".specNumber").value;
     let category = categoryOptions[document.querySelector(".categorySpec").selectedIndex];
-    let fromTo = document.querySelector(".fromTo");
+    let temp = document.querySelectorAll(".fromTo");
+    let fromTo = temp[temp.length - 1];
     let options = fromTo.querySelectorAll(".specNumber");
     let fromVal = options[options.length - 2].value;
     let toVal = options[options.length - 1].value;

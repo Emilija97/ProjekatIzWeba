@@ -26,8 +26,7 @@ h2 {
     text-align: center;
 }
 
-.grocerie,
-.property {
+.grocerie {
     max-width: 350px;
     font-family: "Times New Roman";
     padding-left: 5px;
@@ -38,26 +37,23 @@ h2 {
     font-weight: bold;
 }
 
-.delete {
-    max-width: 200px;
-    flex: 1;
-}
-
 table,
 th,
 td {
     border: solid black 1px;
     border-collapse: collapse;
-    width: 530px;
+    width: 100%;
     margin: 5px 0 5px 0;
 }
 
 th {
     background-color: antiquewhite;
+    width: 20%;
 }
 
 td {
     background-color: #ffffff;
+    width: 20%;
 }
 
 .result {
@@ -73,23 +69,10 @@ td {
     flex: 1;
 }
 
-.calculator {
-    display: flex;
-    flex-direction: column;
-    padding: 1%;
-    margin-top: 3px;
-    flex: 1;
-}
-
-.dailyCalculator {
-    display: flex;
-    flex-direction: column;
-    padding: 1%;
-    margin-top: 3px;
-}
-
-.divInput,
+.calculator,
+.dailyCalculator,
 .form,
+.divInput,
 .specifyGrocerie {
     display: flex;
     flex-direction: column;
@@ -106,7 +89,15 @@ td {
 option,
 .category,
 .calculate,
-.calculateDailyInput {
+.calculateDailyInput,
+.type,
+.typeSpec,
+.typeBtn,
+.tempBtn,
+.confirm,
+.property,
+.specNumber,
+.categorySpec {
     width: 98%;
     height: 100%;
     font-size: 15px;
@@ -119,6 +110,16 @@ option,
     background-image: linear-gradient(to right, #ffefba, #ffefba, #ffffff);
     font-weight: bold;
     flex: 1;
+}
+
+.typeBtn,
+.typeSpec,
+.form,
+.tempBtn,
+.categorySpec,
+.tempRow,
+.specifyGrocerie {
+    flex: 0;
 }
 
 .dailyLabel {
@@ -135,17 +136,20 @@ option,
 
 .calculate,
 .calculateDailyInput,
-.category {
-    width: 100%;
-}
-
-.delete,
+.category,
 .type,
 .typeSpec,
 .typeBtn,
 .tempBtn,
-.confirm {
+.confirm,
+.categorySpec {
+    width: 100%;
+}
+
+.delete {
     width: 300px;
+    max-width: 200px;
+    flex: 0;
     font-size: 15px;
     margin-top: 3px;
     font-family: "Times New Roman";
@@ -163,7 +167,7 @@ select {
 }
 
 .temporaryField {
-    margin-top: 3%;
+    margin-top: 1%;
     width: 100%;
     height: 100%;
     display: flex;
@@ -176,10 +180,8 @@ select {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-content: space-between;
+    align-items: center;
+    flex: 1;
+    margin-top: 3px;
 }
-
-
-/* 
-.fromTo {
-    justify-content: space-between;
-} */
