@@ -1,11 +1,11 @@
-import { Namirnica } from "./namirnica";
+import { Grocerie } from "./grocerie";
 export class NamirnicaService {
     constructor() {
         this.nizNamirnica = [];
     }
 
-    dodajNamirnicu(namirnica) {
-        this.nizNamirnica.push(namirnica);
+    dodajNamirnicu(grocerie) {
+        this.nizNamirnica.push(grocerie);
     }
 
     vratiPoslednjeDodatuNamirnicu() {

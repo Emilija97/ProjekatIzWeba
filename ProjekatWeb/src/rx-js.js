@@ -1,4 +1,4 @@
-import { from, fromEvent, Subject, interval, Observable, zip } from "rxjs";
+import { from, fromEvent, Subject, interval, Observable, zip, of } from "rxjs";
 import {
     debounceTime,
     switchMap,
@@ -8,17 +8,31 @@ import {
     scan,
     reduce,
     pairwise,
-    concatMap
+    concatMap,
+    mergeMap,
+    delay,
+    take,
+    mergeAll,
+    flatMap,
+    combineAll
 } from "rxjs/operators";
-import { Namirnica } from "./namirnica";
+import { Grocerie, getCategory } from "./grocerie";
 
 let flagEnter = 0;
 let flagCat = 0;
 let flagGro = 0;
 let flagGram = 0;
 let flag = 0;
-const selectOptions = ["Proteins", "UH", "Calories", "Fats"];
+let flagDiv = 0;
+const categoryOptions = ["Proteins", "UH", "Calories", "Fats"];
 const typeOfFood = ["Fruit", "Vegetable", "Milk", "Fish", "Meat", "Cereals"];
+let grocerieList$ = new Subject();
+let grocerieTypeList$ = new Subject();
+const timer$ = interval(10000);
+let tempList$ = new Subject();
+let tempList2$ = new Subject();
+let calculateSpecList$ = new Subject();
+let pom$ = new Subject();
 
 function createLabel(className, innerHTML, parent) {
     let element = document.createElement("label");
@@ -56,14 +70,14 @@ function createInput(className, value, parent) {
     parent.appendChild(element);
 }
 
-function createNumber(className, parent) {
+function createNumber(className, parent, step, max, defaultValue) {
     let element = document.createElement("input");
     element.type = "number";
     element.className = className;
-    element.defaultValue = 100;
-    element.setAttribute("step", 100);
+    element.defaultValue = defaultValue;
+    element.setAttribute("step", step);
     element.setAttribute("min", 0);
-    element.setAttribute("max", 2000);
+    element.setAttribute("max", max);
     parent.appendChild(element);
 }
 
@@ -94,7 +108,27 @@ const divSearch = document.querySelector(".search");
 function getGrocerie(name) {
     let nameTmp = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     return from(
-        fetch(`http://localhost:3000/namirnice?name=${nameTmp}`).then(response =>
+        fetch(`http://localhost:3000/groceries?name=${nameTmp}`).then(response =>
+            response.json()
+        )
+    );
+}
+
+function getGrocerieByTypeFilter(type, fromVal, to, category) {
+    let kat;
+    if (category == "UH") {
+        kat = category;
+    } else kat = category.toLowerCase();
+    return from(
+        fetch(
+            `http://localhost:3000/groceries?type=${type}&${kat}_gte=${fromVal}&${kat}_lte=${to}`
+        ).then(response => response.json())
+    );
+}
+
+function getGrocerieByType(type) {
+    return from(
+        fetch(`http://localhost:3000/groceries?type=${type}`).then(response =>
             response.json()
         )
     );
@@ -102,7 +136,7 @@ function getGrocerie(name) {
 
 function postGrocerie(grocerie) {
     return from(
-        fetch(`http://localhost:3000/namirnice`, {
+        fetch(`http://localhost:3000/groceries`, {
             method: "POST",
             headers: {
                 Accept: "application/json, text/plain, */*",
@@ -113,7 +147,7 @@ function postGrocerie(grocerie) {
     );
 }
 
-//getGrocerie("Jagnjetina").subscribe(namirnica => console.log(namirnica));
+//getGrocerie("Jagnjetina").subscribe(grocerie => console.log(grocerie));
 createLabel("guide", "Enter the name of the desired grocerie: ", divSearch);
 
 createInput("grocerie", "", divSearch);
@@ -197,9 +231,9 @@ function drawCalculator() {
 
     createInput("enter", "Grocerie", divCalculator);
 
-    createNumber("number", divCalculator);
+    createNumber("number", divCalculator, 100, 2000, 100);
 
-    createSelect("category", selectOptions, divCalculator);
+    createSelect("category", categoryOptions, divCalculator);
 
     createLabel("result", "", divCalculator);
 
@@ -252,7 +286,7 @@ function myFocus(klasa, flag) {
 function calculateValue() {
     const grocerie = document.querySelector(".enter").value;
     const grams = document.querySelector(".number").value;
-    let category = selectOptions[document.querySelector("select").selectedIndex];
+    let category = categoryOptions[document.querySelector("select").selectedIndex];
 
     getGrocerie(grocerie)
         .pipe(concatMap(res => res))
@@ -271,29 +305,25 @@ function calculate(grocerie, grams, category, label) {
         case "UH":
             {
                 value = grocerie.UH * (grams / 100);
-                label.innerHTML =
-                "The amount of UHs per " + grams + "g is " + value + ".";
+                label.innerHTML = "The amount of UHs per " + grams + "g is " + value + ".";
             }
             break;
         case "Proteins":
             {
                 value = grocerie.proteins * (grams / 100);
-                label.innerHTML =
-                "The amount of proteins per " + grams + "g is " + value + ".";
+                label.innerHTML = "The amount of proteins per " + grams + "g is " + value + ".";
             }
             break;
         case "Fats":
             {
                 value = grocerie.fats * (grams / 100);
-                label.innerHTML =
-                "The amount of fats per " + grams + "g is " + value + ".";
+                label.innerHTML = "The amount of fats per " + grams + "g is " + value + ".";
             }
             break;
         default:
             {
                 value = grocerie.calories * (grams / 100);
-                label.innerHTML =
-                "The amount of calories per " + grams + "g is " + value + ".";
+                label.innerHTML = "The amount of calories per " + grams + "g is " + value + ".";
             }
     }
     return value;
@@ -313,7 +343,7 @@ function createRadioButton(value, name, className, parent) {
 function drawCategory(parent) {
     let divCategory = null;
 
-    selectOptions.forEach((option, index) => {
+    categoryOptions.forEach((option, index) => {
         divCategory = document.createElement("div");
         divCategory.className = "divCategory";
         parent.appendChild(divCategory);
@@ -352,7 +382,7 @@ function drawInput(parent) {
         "Specify the desired daily entry for the selected category",
         divInput
     );
-    createNumber("limit", divInput);
+    createNumber("limit", divInput, 100, 2000, 100);
 
     createLabel("guide", "Eaten food quantity in grams", divInput);
     createInput("gramsInput", "Quantity in grams", divInput);
@@ -401,8 +431,6 @@ function createList(className, type, parent) {
     element.className = className;
     parent.appendChild(element);
 }
-
-let grocerieList$ = new Subject();
 
 function writeCalculation() {
     const grocerie = document.querySelector(".dailyInput").value;
@@ -486,15 +514,12 @@ function promiseFunc(result, dailyDisplay) {
     });
 }
 
-const timer$ = interval(10000);
-
 //ovde se izvrsava zip fja
-zip(grocerieList$, timer$).subscribe(grocerie => showElement(grocerie));
+zip(grocerieList$, timer$).subscribe(grocerie => showElement(grocerie, ".zipLab"));
 
-function showElement(grocerie) {
-    let lab = document.querySelector(".zipLab");
-    lab.innerHTML = grocerie[0].name;
-    console.log(grocerie[0].name);
+function showElement(grocerie, className) {
+    let lab = document.querySelector(className);
+    lab.innerHTML = "List of groceries: " + grocerie[0].name;
 }
 
 //Mogucnost dodavanja u bazu
@@ -532,9 +557,11 @@ function drawForm() {
 function createGrocerieObject() {
     let elements = document.querySelectorAll(".property");
     let type = typeOfFood[document.querySelector(".type").selectedIndex];
+    let nameTmp =
+        elements[0].value.charAt(0).toUpperCase() + elements[0].value.slice(1).toLowerCase();
 
-    const grocerie = new Namirnica(
-        elements[0].value,
+    const grocerie = new Grocerie(
+        nameTmp,
         elements[1].value,
         elements[2].value,
         elements[3].value,
@@ -544,27 +571,124 @@ function createGrocerieObject() {
     postGrocerie(grocerie);
 }
 
-function transformType(type) {
-    let tmp = null;
-    switch (type) {
-        case "Fruit":
-            tmp = "voce";
-            break;
-        case "Vegetable":
-            tmp = "povrce";
-            break;
-        case "Milk":
-            tmp = "mleko";
-            break;
-        case "Fish":
-            tmp = "riba";
-            break;
-        case "Meat":
-            tmp = "meso";
-            break;
-        default:
-            tmp = "zitarice";
-    }
+drawSpecifyGrocerie();
 
-    return tmp;
+function drawSpecifyGrocerie() {
+    createDiv("specifyGrocerie", rightDiv);
+    const specifyGrocerie = document.querySelector(".specifyGrocerie");
+
+    createHElement("h3", "Specific search", specifyGrocerie);
+
+    createLabel(
+        "specifyLabel",
+        "Choose the type of grocerie to initialize search: ",
+        specifyGrocerie
+    );
+
+    createSelect("typeSpec", typeOfFood, specifyGrocerie);
+
+    createButton("typeBtn", "Find groceries with chosen type", specifyGrocerie);
+
+    createLabel("zipLab2", "", specifyGrocerie);
+
+    const button = document.querySelector(".typeBtn");
+    button.onclick = () => findGroceriesByType(specifyGrocerie);
+}
+
+function findGroceriesByType(parent) {
+    let type = typeOfFood[document.querySelector(".typeSpec").selectedIndex];
+    tempList2$ = getGrocerieByType(type);
+    tempList$ = tempList2$.pipe(
+        mergeMap(x => from(x)),
+        concatMap(x => of(x).pipe(delay(1000)))
+    );
+    zip(tempList$, timer$).subscribe(grocerie => showElement(grocerie, ".zipLab2"));
+    tempList2$.subscribe(res => fillList(parent, res));
+}
+
+function fillList(parent, array) {
+    grocerieTypeList$ = array;
+    drawTemporaryField(parent, grocerieTypeList$.length);
+}
+
+function drawTemporaryField(parent, max) {
+    createDiv("temporaryField", parent);
+    const temp = document.querySelector(".temporaryField");
+    temp.innerHTML = "";
+
+    createOneRowOfField(temp, "Take groceries for chosen type:", 1, max, 0);
+    createSelect("categorySpec", categoryOptions, temp);
+
+    createDiv("fromTo", temp);
+    let fromTo = document.querySelector(".fromTo");
+    createOneRowOfField(fromTo, "From: ", 0.5, 500, 0);
+    createOneRowOfField(fromTo, "To: ", 0.5, 500, 0);
+
+    createButton("tempBtn", "Calculate value in given range", temp); //btn btn-outline-success
+    checkClick(".tempBtn", onTempBtnClick);
+
+    createDiv("listOfGroceries", temp);
+}
+
+function createOneRowOfField(parent, labelHtml, step, maxValue, defaultValue) {
+    createDiv("tempRow", parent);
+    let temp = document.querySelectorAll(".tempRow");
+    let div = temp[temp.length - 1];
+    createLabel("temporaryLabel", labelHtml, div);
+    createNumber("specNumber", div, step, maxValue, defaultValue);
+}
+
+function onTempBtnClick() {
+    let listOfGroceries = document.querySelector(".listOfGroceries");
+    let type = typeOfFood[document.querySelector(".typeSpec").selectedIndex];
+    let takeNmb = document.querySelector(".specNumber").value;
+    let category = categoryOptions[document.querySelector(".categorySpec").selectedIndex];
+    let fromTo = document.querySelector(".fromTo");
+    let options = fromTo.querySelectorAll(".specNumber");
+    let fromVal = options[options.length - 2].value;
+    let toVal = options[options.length - 1].value;
+    console.log(type + ", " + takeNmb + ", " + category + ", " + fromVal + ", " + toVal);
+
+    pom$ = getGrocerieByTypeFilter(type, fromVal, toVal, category);
+    printSpecificData(pom$, takeNmb, category, listOfGroceries);
+    calculateSpecificValue(pom$, category, takeNmb, listOfGroceries);
+}
+
+function printSpecificData(res, takeNmb, category, parent) {
+    if (flagDiv == 1) {
+        parent.innerHTML = "";
+    }
+    res
+        .pipe(
+            concatMap(x => x),
+            take(takeNmb)
+        )
+        .subscribe(res => showSpecificData(res, parent, category));
+}
+
+function showSpecificData(el, parent, category) {
+    let list = document.createElement("ol");
+    let groc = new Grocerie(el.name, el.proteins, el.UH, el.calories, el.fats, el.type);
+    list.innerHTML = el.name + " has " + groc.getCategory(category) + ` ${category}`;
+    parent.appendChild(list);
+    flagDiv = 1;
+}
+
+function calculateSpecificValue(list, category, takeNmb, parent) {
+    calculateSpecList$ = list;
+    let groc;
+    calculateSpecList$
+        .pipe(
+            concatMap(x => x),
+            take(takeNmb),
+            map(el => {
+                groc = new Grocerie(el.name, el.proteins, el.UH, el.calories, el.fats, el.type);
+            }),
+            reduce((acc, el) => (acc += groc.getCategory(category)), 0)
+        )
+        .subscribe(res => showSpecificValue(res, parent));
+}
+
+function showSpecificValue(result, parent) {
+    createLabel("specificValue", `Result for wanted calculation is: ${result}`, parent);
 }
